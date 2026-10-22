@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres_service
+    restart: always
+    environment:
+      POSTGRES_DB: book_social_network
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U username -d book_social_network"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  maildev:
+    image: maildev/maildev:latest
+    container_name: maildev_service
+    restart: always
+    ports:
+      - "1080:1080" # Interface web de MailDev
+      - "1025:1025" # Port SMTP pour recevoir les e-mails
+    volumes:
+      - maildata:/data
+
+volumes:
+  pgdata:
+  maildata:
